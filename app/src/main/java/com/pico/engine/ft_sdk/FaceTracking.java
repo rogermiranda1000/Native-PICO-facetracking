@@ -212,7 +212,7 @@ public class FaceTracking {
     private static void mergeResults() {
         synchronized (FaceTracking.inited) {
             FaceTracking.results = new float[72];
-            if (FaceTracking.videoResults.length > 0) System.arraycopy(FaceTracking.videoResults, 0, FaceTracking.results, 0, FaceTracking.videoResults.length /* TODO 52? */);
+            if (FaceTracking.videoResults.length > 0) System.arraycopy(FaceTracking.videoResults, 0, FaceTracking.results, 0, FaceTracking.videoResults.length);
             if (FaceTracking.audioResults.length > 0) System.arraycopy(FaceTracking.audioResults, 52, FaceTracking.results, 52, 20); // TODO it starts consulting `audioResults` from the index 52, shouldn't it start at 0?
         }
     }
@@ -224,9 +224,9 @@ public class FaceTracking {
         }
         String absolutePath = file.getAbsolutePath();
         FaceTracking.modelDir = absolutePath;
-        Log.e(TAG, absolutePath);
-        Log.d(TAG, "copy models to sdcard");
-        /*copyData(context, FaceTracking.modelDir, C0379R.raw.eye, "eye");
+        Log.d(TAG, absolutePath);
+        /*Log.d(TAG, "copy models to sdcard");
+        copyData(context, FaceTracking.modelDir, C0379R.raw.eye, "eye");
         copyData(context, FaceTracking.modelDir, C0379R.raw.mouth, "mouth");
         copyData(context, FaceTracking.modelDir, C0379R.raw.tt_blink_ints, "tt_blink_ints.model");
         copyData(context, FaceTracking.modelDir, C0379R.raw.tt_blink_seqs, "tt_blink_seqs.model");

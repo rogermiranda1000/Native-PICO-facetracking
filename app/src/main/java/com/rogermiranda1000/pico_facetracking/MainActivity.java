@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
             // setup
             FaceTracking.initSDK();
+            //FaceTracking.initialize(this);
 
             // get the data
             /*new Thread(() -> {
