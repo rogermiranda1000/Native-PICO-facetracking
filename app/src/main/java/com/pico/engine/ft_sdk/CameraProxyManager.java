@@ -91,7 +91,7 @@ public class CameraProxyManager {
 
         void onFrameCallback(ArrayList<ByteBuffer> arrayList);
 
-        void onOpen(boolean z);
+        void onOpen(boolean cameraAccess);
     }
 
     public CameraProxyManager(Context context, CameraCallback cameraCallback, Handler handler) {

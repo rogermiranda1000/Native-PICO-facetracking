@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
             text.setText("Loading...");
 
             // setup
-            FaceTracking.initSDK();
             FaceTracking.initialize(this);
 
             // get the data
@@ -60,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_CODE_RECORD_AUDIO_PERMISSIONS);
         }
+        // TODO add read/write external files? (it seems that the FaceTraacking code moves .so files)
+        // if so, include to Manifest:
+        // <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        // <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);

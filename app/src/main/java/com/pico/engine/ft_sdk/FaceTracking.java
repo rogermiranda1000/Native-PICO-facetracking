@@ -123,21 +123,24 @@ public class FaceTracking {
 
         CameraProxyManager mCameraManager = new CameraProxyManager(context, new CameraProxyManager.CameraCallback() { // from class: com.pico.engine.ft_sdk.FaceTrackor.2
             @Override // com.pico.engine.ft_sdk.CameraProxyManager.CameraCallback
-            public void onOpen(boolean z) {
-                if (z) FaceTracking.initSDK();
-                else Log.e(TAG, "camera open fail!!!");
+            public void onOpen(boolean cameraAccess) {
+                if (cameraAccess) FaceTracking.initSDK();
+                else Log.e(TAG, "camera open failed");
             }
 
             @Override // com.pico.engine.ft_sdk.CameraProxyManager.CameraCallback
             public void onFrameCallback(ArrayList<ByteBuffer> arrayList) {
-                FaceTracking.eyeLeft = arrayList.get(0);
-                FaceTracking.eyeRight = arrayList.get(1);
-                FaceTracking.mouth = arrayList.get(2);
+                synchronized (FaceTracking.inited) {
+                    FaceTracking.eyeLeft = arrayList.get(0);
+                    FaceTracking.eyeRight = arrayList.get(1);
+                    FaceTracking.mouth = arrayList.get(2);
+                }
                 Log.e(TAG, "onFrameCallback in thread =" + Thread.currentThread().getId());
-                long currentTimeMillis = System.currentTimeMillis();
-                FaceTracking.videoResults = FaceTracking.processVideoFrame(FaceTracking.eyeLeft, FaceTracking.eyeRight, FaceTracking.mouth, 400, 400);
+                float []data = FaceTracking.processVideoFrame(FaceTracking.eyeLeft, FaceTracking.eyeRight, FaceTracking.mouth, 400, 400);
+                synchronized (FaceTracking.inited) {
+                    FaceTracking.videoResults = data;
+                }
                 FaceTracking.mergeResults();
-                Log.e(TAG, "processVideoFrame cost " + (System.currentTimeMillis() - currentTimeMillis) + " ms");
             }
 
             @Override // com.pico.engine.ft_sdk.CameraProxyManager.CameraCallback
@@ -148,6 +151,7 @@ public class FaceTracking {
         }, FaceTracking.mHandler);
         mCameraManager.openCamera(context);
 
+        // TODO first face, then we'll worry about lips
         /*AudioRecorder mAudioRecorder = new AudioRecorder(context, mode == Mode.LIP_RECORD_DUMP, new AudioRecorder.RecordListener() { // from class: com.pico.engine.ft_sdk.FaceTrackor.3
             @Override // com.pico.engine.ft_sdk.AudioRecorder.RecordListener
             public void onStartRecord() {
@@ -160,7 +164,9 @@ public class FaceTracking {
                 float[] processAudioFrame = FaceTracking.processAudioFrame(fArr, 1);
                 Log.e(TAG, "processAudioFrame  length  =" + fArr.length);
                 if (processAudioFrame.length > 0) {
-                    FaceTracking.audioResults = processAudioFrame;
+                    synchronized (FaceTracking.inited) {
+                        FaceTracking.audioResults = processAudioFrame;
+                    }
                     FaceTracking.mergeResults();
                     StringBuilder sb = new StringBuilder();
                     for (float f : FaceTracking.results) {
@@ -225,6 +231,7 @@ public class FaceTracking {
         String absolutePath = file.getAbsolutePath();
         FaceTracking.modelDir = absolutePath;
         Log.d(TAG, absolutePath);
+        // TODO are the models required? We couldn't decompile `copyData`
         /*Log.d(TAG, "copy models to sdcard");
         copyData(context, FaceTracking.modelDir, C0379R.raw.eye, "eye");
         copyData(context, FaceTracking.modelDir, C0379R.raw.mouth, "mouth");
