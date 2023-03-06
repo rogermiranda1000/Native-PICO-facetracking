@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.pico.engine.ft_sdk.FaceTracking;
 
@@ -25,16 +26,23 @@ public class MainActivity extends AppCompatActivity {
 
         this.startService(new Intent(this, FacetrackingSender.class));
 
-        if (checkPermissions()) {
-            new Thread(() -> {
-                // setup
-                FaceTracking.initSDK();
+        final TextView text = (TextView)findViewById(R.id.text);
+        if (!checkPermissions()) text.setText("Permissions error");
+        else {
+            text.setText("Loading...");
 
-                // send data
+            // setup
+            FaceTracking.initSDK();
+
+            // get the data
+            /*new Thread(() -> {
                 while (true) {
-                    Log.d(TAG, FaceTracking.getResults().toString());
+                    String data = FaceTracking.getResults().toString();
+
+                    text.setText(data);
+                    Log.v(TAG, data);
                 }
-            }).start();
+            }).start();*/
         }
     }
 
@@ -47,6 +55,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED);
+                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
     }
 }
