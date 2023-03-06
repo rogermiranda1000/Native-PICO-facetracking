@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rogermiranda1000.pico_facetracking">
+    package="com.rogermiranda1000.pico_facetracking"
+    android:versionCode="1" android:versionName="1.0.0" android:installLocation="preferExternal"
+    android:compileSdkVersion="32" android:compileSdkVersionCodename="12">
+    <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="32"/>
+    <supports-screens android:anyDensity="true" android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true"/>
+    <uses-feature android:glEsVersion="0x30000"/>
+    <uses-feature android:name="android.hardware.vulkan.version" android:required="false"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
