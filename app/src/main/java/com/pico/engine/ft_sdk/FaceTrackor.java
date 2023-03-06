@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * All the functions required to setup eye and face tracking.
  * Note: Retrieved from FT demo, `FaceTrackor.java`
  */
-public class FaceTracking {
+public class FaceTrackor {
     public static final String TAG = "ft_social";
 
     private static final String VERSION_STR = "0.1.3";
@@ -70,16 +70,16 @@ public class FaceTracking {
         Log.e(TAG, "SDK version =" + VERSION_STR);
         int init = /*init(FaceTracking.modelDir, FaceTracking.modelDir)*/ 0;
 
-        synchronized (FaceTracking.inited) {
-            FaceTracking.inited.set(init == 0); // if 0, succeed
+        synchronized (FaceTrackor.inited) {
+            FaceTrackor.inited.set(init == 0); // if 0, succeed
         }
 
-        if (FaceTracking.isInited()) Log.e(TAG, "initSDK success  in thread =" + Thread.currentThread().getId());
+        if (FaceTrackor.isInited()) Log.e(TAG, "initSDK success  in thread =" + Thread.currentThread().getId());
         else Log.e(TAG, "intSDK fail ret =" + init);
     }
 
     public static int release() {
-        if (FaceTracking.isInited()) {
+        if (FaceTrackor.isInited()) {
             CameraProxyManager cameraProxyManager = mCameraManager;
             if (cameraProxyManager != null) {
                 cameraProxyManager.close();
@@ -98,8 +98,8 @@ public class FaceTracking {
                 mAudioPlayer = null;
             }
 
-            synchronized (FaceTracking.inited) {
-                FaceTracking.inited.set(false);
+            synchronized (FaceTrackor.inited) {
+                FaceTrackor.inited.set(false);
             }
         }
         return 0;
@@ -111,44 +111,44 @@ public class FaceTracking {
      * @param context Android app context
      */
     public static void initialize(Context context) {
-        if (FaceTracking.isInited()) {
+        if (FaceTrackor.isInited()) {
             Log.e(TAG, "already inited, ignore");
             return;
         }
-        FaceTracking.prepareData(context);
+        FaceTrackor.prepareData(context);
 
-        FaceTracking.mHandlerThread = new HandlerThread("FaceTracking");
-        FaceTracking.mHandlerThread.start();
-        FaceTracking.mHandler = new Handler(FaceTracking.mHandlerThread.getLooper());
+        FaceTrackor.mHandlerThread = new HandlerThread("FaceTracking");
+        FaceTrackor.mHandlerThread.start();
+        FaceTrackor.mHandler = new Handler(FaceTrackor.mHandlerThread.getLooper());
 
         CameraProxyManager mCameraManager = new CameraProxyManager(context, new CameraProxyManager.CameraCallback() { // from class: com.pico.engine.ft_sdk.FaceTrackor.2
             @Override // com.pico.engine.ft_sdk.CameraProxyManager.CameraCallback
             public void onOpen(boolean cameraAccess) {
-                if (cameraAccess) FaceTracking.initSDK();
+                if (cameraAccess) FaceTrackor.initSDK();
                 else Log.e(TAG, "camera open failed");
             }
 
             @Override // com.pico.engine.ft_sdk.CameraProxyManager.CameraCallback
             public void onFrameCallback(ArrayList<ByteBuffer> arrayList) {
-                synchronized (FaceTracking.inited) {
-                    FaceTracking.eyeLeft = arrayList.get(0);
-                    FaceTracking.eyeRight = arrayList.get(1);
-                    FaceTracking.mouth = arrayList.get(2);
+                synchronized (FaceTrackor.inited) {
+                    FaceTrackor.eyeLeft = arrayList.get(0);
+                    FaceTrackor.eyeRight = arrayList.get(1);
+                    FaceTrackor.mouth = arrayList.get(2);
                 }
                 Log.e(TAG, "onFrameCallback in thread =" + Thread.currentThread().getId());
-                float []data = FaceTracking.processVideoFrame(FaceTracking.eyeLeft, FaceTracking.eyeRight, FaceTracking.mouth, 400, 400);
-                synchronized (FaceTracking.inited) {
-                    FaceTracking.videoResults = data;
+                float []data = FaceTrackor.processVideoFrame(FaceTrackor.eyeLeft, FaceTrackor.eyeRight, FaceTrackor.mouth, 400, 400);
+                synchronized (FaceTrackor.inited) {
+                    FaceTrackor.videoResults = data;
                 }
-                FaceTracking.mergeResults();
+                FaceTrackor.mergeResults();
             }
 
             @Override // com.pico.engine.ft_sdk.CameraProxyManager.CameraCallback
             public void onClose() {
-                FaceTracking.destroy();
+                FaceTrackor.destroy();
                 Log.e(TAG, "destroy SDK  in thread =" + Thread.currentThread().getId());
             }
-        }, FaceTracking.mHandler);
+        }, FaceTrackor.mHandler);
         mCameraManager.openCamera(context);
 
         // TODO first face, then we'll worry about lips
@@ -194,8 +194,8 @@ public class FaceTracking {
      */
     public static float[] getResults() {
         float[] fArr;
-        synchronized (FaceTracking.inited) {
-            fArr = FaceTracking.isInited() ? FaceTracking.results : new float[0];
+        synchronized (FaceTrackor.inited) {
+            fArr = FaceTrackor.isInited() ? FaceTrackor.results : new float[0];
         }
         return fArr;
     }
@@ -206,8 +206,8 @@ public class FaceTracking {
      */
     private static boolean isInited() {
         boolean val;
-        synchronized (FaceTracking.inited) {
-            val = FaceTracking.inited.get();
+        synchronized (FaceTrackor.inited) {
+            val = FaceTrackor.inited.get();
         }
         return val;
     }
@@ -216,10 +216,10 @@ public class FaceTracking {
      * Copy `videoResults` and `audioResults` into `FaceTracking.results`
      */
     private static void mergeResults() {
-        synchronized (FaceTracking.inited) {
-            FaceTracking.results = new float[72];
-            if (FaceTracking.videoResults.length > 0) System.arraycopy(FaceTracking.videoResults, 0, FaceTracking.results, 0, FaceTracking.videoResults.length);
-            if (FaceTracking.audioResults.length > 0) System.arraycopy(FaceTracking.audioResults, 52, FaceTracking.results, 52, 20); // TODO it starts consulting `audioResults` from the index 52, shouldn't it start at 0?
+        synchronized (FaceTrackor.inited) {
+            FaceTrackor.results = new float[72];
+            if (FaceTrackor.videoResults.length > 0) System.arraycopy(FaceTrackor.videoResults, 0, FaceTrackor.results, 0, FaceTrackor.videoResults.length);
+            if (FaceTrackor.audioResults.length > 0) System.arraycopy(FaceTrackor.audioResults, 52, FaceTrackor.results, 52, 20); // TODO it starts consulting `audioResults` from the index 52, shouldn't it start at 0?
         }
     }
 
@@ -229,7 +229,7 @@ public class FaceTracking {
             Log.e(TAG, "mkdirs " + file.getAbsolutePath() + " fail!!!");
         }
         String absolutePath = file.getAbsolutePath();
-        FaceTracking.modelDir = absolutePath;
+        FaceTrackor.modelDir = absolutePath;
         Log.d(TAG, absolutePath);
         // TODO are the models required? We couldn't decompile `copyData`
         /*Log.d(TAG, "copy models to sdcard");

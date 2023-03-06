@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.pico.engine.ft_sdk.FaceTracking;
+import com.pico.engine.ft_sdk.FaceTrackor;
 
 import java.util.Arrays;
 
@@ -34,12 +34,12 @@ public class MainActivity extends AppCompatActivity {
             text.setText("Loading...");
 
             // setup
-            FaceTracking.initialize(this);
+            FaceTrackor.initialize(this);
 
             // get the data
             new Thread(() -> {
                 while (true) {
-                    String data = Arrays.toString(FaceTracking.getResults());
+                    String data = Arrays.toString(FaceTrackor.getResults());
 
                     text.setText(data);
                     Log.v(TAG, data);
