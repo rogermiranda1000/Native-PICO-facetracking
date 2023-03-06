@@ -8,6 +8,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * All the functions required to setup eye and face tracking.
@@ -24,7 +25,6 @@ public class FaceTrackor {
      */
     private static final AtomicBoolean inited = new AtomicBoolean(false);
 
-    private static AudioPlayer mAudioPlayer;
     private static AudioRecorder mAudioRecorder;
     private static CameraProxyManager mCameraManager;
 
@@ -92,11 +92,6 @@ public class FaceTrackor {
                 audioRecorder.stop();
                 mAudioRecorder = null;
             }
-            AudioPlayer audioPlayer = mAudioPlayer;
-            if (audioPlayer != null) {
-                audioPlayer.stop();
-                mAudioPlayer = null;
-            }
 
             synchronized (FaceTrackor.inited) {
                 FaceTrackor.inited.set(false);
@@ -152,7 +147,7 @@ public class FaceTrackor {
         mCameraManager.openCamera(context);
 
         // TODO first face, then we'll worry about lips
-        /*AudioRecorder mAudioRecorder = new AudioRecorder(context, mode == Mode.LIP_RECORD_DUMP, new AudioRecorder.RecordListener() { // from class: com.pico.engine.ft_sdk.FaceTrackor.3
+        /*AudioRecorder mAudioRecorder = new AudioRecorder(context, false, new AudioRecorder.RecordListener() { // from class: com.pico.engine.ft_sdk.FaceTrackor.3
             @Override // com.pico.engine.ft_sdk.AudioRecorder.RecordListener
             public void onStartRecord() {
                 FaceTrackor.initSDK();
@@ -161,19 +156,18 @@ public class FaceTrackor {
             @Override // com.pico.engine.ft_sdk.AudioRecorder.RecordListener
             public void onRecordData(float[] fArr) {
                 Log.d(TAG, "onRecordData current thread is =" + Thread.currentThread().getId());
-                float[] processAudioFrame = FaceTracking.processAudioFrame(fArr, 1);
+                float[] processAudioFrame = FaceTrackor.processAudioFrame(fArr, 1);
                 Log.e(TAG, "processAudioFrame  length  =" + fArr.length);
                 if (processAudioFrame.length > 0) {
-                    synchronized (FaceTracking.inited) {
-                        FaceTracking.audioResults = processAudioFrame;
+                    synchronized (FaceTrackor.inited) {
+                        FaceTrackor.audioResults = processAudioFrame;
                     }
-                    FaceTracking.mergeResults();
+                    FaceTrackor.mergeResults();
                     StringBuilder sb = new StringBuilder();
-                    for (float f : FaceTracking.results) {
+                    for (float f : FaceTrackor.results) {
                         sb.append(f).append(",");
                     }
-                    Log.e(TAG, "index =" + FaceTracking.count + " audioResults =" + ((Object) sb));
-                    FaceTrackor.access$1008();
+                    Log.e(TAG,  "audioResults =" + ((Object) sb));
                     return;
                 }
                 Log.e(TAG, "invalid results length =" + processAudioFrame.length);
