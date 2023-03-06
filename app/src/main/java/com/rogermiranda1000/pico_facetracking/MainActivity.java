@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.pico.engine.ft_sdk.FaceTracking;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "pico_facetracking_sender";
 
@@ -33,17 +35,21 @@ public class MainActivity extends AppCompatActivity {
 
             // setup
             FaceTracking.initSDK();
-            //FaceTracking.initialize(this);
+            FaceTracking.initialize(this);
 
             // get the data
-            /*new Thread(() -> {
+            new Thread(() -> {
                 while (true) {
-                    String data = FaceTracking.getResults().toString();
+                    String data = Arrays.toString(FaceTracking.getResults());
 
                     text.setText(data);
                     Log.v(TAG, data);
+
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ignore) {}
                 }
-            }).start();*/
+            }).start();
         }
     }
 

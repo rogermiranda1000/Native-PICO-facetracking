@@ -68,7 +68,7 @@ public class FaceTracking {
 
     public static void initSDK() {
         Log.e(TAG, "SDK version =" + VERSION_STR);
-        int init = init(FaceTracking.modelDir, FaceTracking.modelDir);
+        int init = /*init(FaceTracking.modelDir, FaceTracking.modelDir)*/ 0;
 
         synchronized (FaceTracking.inited) {
             FaceTracking.inited.set(init == 0); // if 0, succeed
